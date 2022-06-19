@@ -8,7 +8,7 @@ on:
 concurrency: master
     
 env:
-  REPOSITORY: morecontainers/awscli
+  REPOSITORY: morecontainers/socat
 
 jobs:
   build:
