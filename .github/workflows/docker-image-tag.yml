@@ -1,3 +1,5 @@
+name: build-publish-tag
+
 on:
   push:
     branches: [ "!*" ]
@@ -13,7 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Get version tag
+      id: tag
+      run: |
+        [[ ! "$GITHUB_REF" =~ refs/tags ]] && exit
+        echo "::set-output name=value::${GITHUB_REF#refs/tags/}"
     - run: docker login -u ${{ secrets.HUB_DOCKER_USERNAME }} -p ${{ secrets.HUB_DOCKER_PASSWORD }}
-    - run: echo "::set-env name=TAG::$(git tag --points-at HEAD)"
-    - run: docker build --tag $REPOSITORY:$TAG .
-    - run: docker push $REPOSITORY:$TAG
+    - run: docker buildx build --tag $REPOSITORY:${{ steps.tag.outputs.value }} .
+    - run: docker push $REPOSITORY:${{ steps.tag.outputs.value }}

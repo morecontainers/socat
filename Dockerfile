@@ -1,6 +1,6 @@
-#     syntax: docker/dockerfile:1.4
+# syntax = docker/dockerfile:1.4
 FROM  alpine:3.16
-ENV   SOCAT_VERSION=1.7.4.2
+ARG   SOCAT_VERSION=1.7.4.2
 RUN   mkdir -p /var/cache/apk && ln -s /var/cache/apk /etc/apk/cache
 RUN   --mount=type=cache,target=/var/cache apk add \
       bash \
@@ -15,9 +15,9 @@ RUN   --mount=type=cache,target=/var/cache apk add \
       openssl-dev \
       openssl-libs-static \
         ;
-RUN <<EOF
-      mkdir -p /build
-      cd build
+RUN bash <<EOF
+      set -exu
+      mkdir -p /build && cd /build
       curl -C - -LO http://www.dest-unreach.org/socat/download/socat-${SOCAT_VERSION}.tar.gz
       tar xzvf socat-${SOCAT_VERSION}.tar.gz
       cd socat-${SOCAT_VERSION}
