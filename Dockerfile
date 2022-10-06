@@ -27,6 +27,10 @@ RUN bash <<EOF
       cp socat /usr/local/bin
 EOF
 
+FROM  alpine:3.16
+RUN   apk add tini-static
+
 FROM  scratch
 COPY  --from=0 /usr/local/bin/socat /socat
-ENTRYPOINT  ["/socat"]
+COPY  --from=1 /sbin/tini-static    /tini-static
+ENTRYPOINT  ["/tini-static","-s","-e","143","/socat"]
